@@ -1,11 +1,14 @@
 import React from 'react';
+import Navbar from "./Navbar";
+import Home from "./Home";
 
 class App extends React.Component {
     render() {
         return (
             <div className='student-tracker'>
                 <div>
-                    <h1>Hello From React!</h1>
+                    <Navbar/>
+                    <Home />
                 </div>
             </div>
         )
