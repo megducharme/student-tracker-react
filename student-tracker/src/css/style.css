@@ -2,7 +2,7 @@ body {
     background-color: #efefef;
 }
 
-#output{
+#printHere{
     display:flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -15,6 +15,10 @@ body {
     padding: 20px 10px;
     margin: 8px;
     align-items: center;
+}
+
+.hide{
+    display:none;
 }
 
 h1, h2, h3, p, button {
