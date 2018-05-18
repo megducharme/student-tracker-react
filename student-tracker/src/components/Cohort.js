@@ -1,5 +1,5 @@
 import React from 'react';
-import Home from "./Home";
+import App from "./App";
 import c22 from "./students/c22";
 import c23 from "./students/c23";
 import c24 from "./students/c24";
@@ -58,7 +58,7 @@ class Cohort extends React.Component {
         })
     
         if (data[0].type === "ForkEvent") {
-            studentEvent = data[0]
+            studentEvent = data[0];
         }
     
         return this.studentFactory(studentName, studentEvent);
@@ -69,7 +69,7 @@ class Cohort extends React.Component {
 
         try{
     
-            let eventDate = new Date(studentEvent.created_at)
+            let eventDate = new Date(studentEvent.created_at);
     
             //I am not sure why I had this line of code, so I am keeping it in case it comes to me later. Right now, it's messing up the data 🙈
             // if(studentEvent.type === "ForkEvent"){
@@ -161,7 +161,7 @@ class Cohort extends React.Component {
 
         Promise.all(arrayOfPromises).then(responses => {
             responses.forEach(response => {
-                allStudentObjs.push(this.getStudentObject(response, students))
+                allStudentObjs.push(this.getStudentObject(response, students));
             });
         }).then(() => {
             allStudentObjs.sort(function (a, b) {
@@ -190,7 +190,7 @@ class Cohort extends React.Component {
                 </div>`
             
             document.getElementById("printHere").innerHTML = stringToDOM;
-        })
+        });
     
     }
     
@@ -199,7 +199,7 @@ class Cohort extends React.Component {
     render() {
         return ( 
             <div>
-                <Home assignClass="hide" />
+                <App assignClass="hide" />
             </div>
         )
     }

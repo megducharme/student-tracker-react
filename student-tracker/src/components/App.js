@@ -1,13 +1,16 @@
 import React from 'react';
 import Navbar from "./Navbar";
-import Home from "./Home";
+
 
 class App extends React.Component {
     render() {
         return (
-            <div>
-                <Home />
+        <div>
+            <Navbar/>
+            <div className="loader-gif">
+                <img src={"img/giphy (10).gif"} alt={"happy parrot"} className={`${this.props.assignClass}`}/>
             </div>
+        </div>
         )
     }
 }
