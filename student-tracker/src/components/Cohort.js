@@ -13,8 +13,8 @@ class Cohort extends React.Component {
     }
 
     componentDidMount() {
+        console.log("cohort mounted!");
         this.params = this.props.match;
-        // first reinstate our localStorage
     }
 
 
@@ -70,12 +70,6 @@ class Cohort extends React.Component {
         try{
     
             let eventDate = new Date(studentEvent.created_at);
-    
-            //I am not sure why I had this line of code, so I am keeping it in case it comes to me later. Right now, it's messing up the data 🙈
-            // if(studentEvent.type === "ForkEvent"){
-            //     eventDate = new Date(studentEvent.payload.forkee.pushed_at)
-            // }
-    
             let today = new Date(Date.now())
     
             const studentObject = Object.create(null, {
