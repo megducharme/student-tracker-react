@@ -5,7 +5,7 @@ class Button extends React.Component {
     render(){
         return (
             <button className="class-buttons">
-                <a onClick={() => this.props.loadCohort(this.props.id)} key={this.props.id}>{this.props.buttonTitle}</a>
+                <a onClick={() => this.props.changeCohort(this.props.id)} key={this.props.id}>{this.props.buttonTitle}</a>
             </button>
         )
     }

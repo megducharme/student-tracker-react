@@ -2,7 +2,7 @@ body {
     background-color: #efefef;
 }
 
-#printHere{
+.output{
     display:flex;
     flex-wrap: wrap;
     justify-content: center;
