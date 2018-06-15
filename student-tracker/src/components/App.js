@@ -17,7 +17,7 @@ class App extends React.Component {
                 )} />
 
                 <div className="loader-gif">
-                    <img src={"../../public/img/loadingspin.gif"} alt={"spin loading"} className={`${this.props.assignClass}`}/>
+                    <img src={"/img/loadingspin.gif"} alt={"spin loading"} className={`${this.props.assignClass}`}/>
                 </div>
             </ React.Fragment>
         )
