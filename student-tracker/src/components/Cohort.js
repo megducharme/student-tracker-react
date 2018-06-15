@@ -1,41 +1,35 @@
 import React from 'react';
-import Home from "./Home";
+import StudentList from './StudentList';
+import $ from "jquery";
 import c22 from "./students/c22";
 import c23 from "./students/c23";
 import c24 from "./students/c24";
 import c25 from "./students/c25";
 
+
 class Cohort extends React.Component {
     constructor(props){
-        super(props);
-        this.cohort = props.match.params.cohortId;
-        this.init();
-    }
+        super(props)
 
-    componentDidMount() {
-        this.params = this.props.match;
-        // first reinstate our localStorage
-    }
-
-
-    init(){
         let cohorts = {
             "c22": c22,
             "c23": c23,
             "c24": c24,
             "c25": c25
-        };
+        }
     
-        const students = cohorts[this.cohort];
-        this.createPromises(students);
+        this.state = {
+            students: cohorts[this.props.match.params.cohortId],
+            studentObjs: []
+        }
+        
     }
 
-
-
+    //create promises to gather data about each student from GitHub's API
     createPromises (students){
         let arrayOfPromises = [];
 
-        students.forEach(student => {
+        this.state.students.forEach(student => {
             arrayOfPromises.push(
                 fetch(`https://spyproxy.bangazon.com/student/commit/https://api.github.com/users/${student.githubHandle}/events`, {
                     type: "GET",
@@ -44,10 +38,11 @@ class Cohort extends React.Component {
                 })
             )
         })
-
-        this.getStudentData(arrayOfPromises, students)
+        
+        return arrayOfPromises
     }
 
+    //once the data about the student's latest events come back from the GitHub API, build student objects 
     getStudentObject (data, students) {
         let studentName = students.find(student => {
             return student.githubHandle === data[0].actor.login;
@@ -58,24 +53,18 @@ class Cohort extends React.Component {
         })
     
         if (data[0].type === "ForkEvent") {
-            studentEvent = data[0]
+            studentEvent = data[0];
         }
-    
+        
+        //use the student factory to structure student data
         return this.studentFactory(studentName, studentEvent);
     }
 
-
+    //use the student data to format it in a way that makes it easy to render it to the DOM
     studentFactory(studentName, studentEvent) {
-
         try{
     
-            let eventDate = new Date(studentEvent.created_at)
-    
-            //I am not sure why I had this line of code, so I am keeping it in case it comes to me later. Right now, it's messing up the data 🙈
-            // if(studentEvent.type === "ForkEvent"){
-            //     eventDate = new Date(studentEvent.payload.forkee.pushed_at)
-            // }
-    
+            let eventDate = new Date(studentEvent.created_at);
             let today = new Date(Date.now())
     
             const studentObject = Object.create(null, {
@@ -129,6 +118,7 @@ class Cohort extends React.Component {
         }
     }
     
+    //helper function for the student factory -- figures out color based on number of days since last commit
     getStudentColor(diffDays){
         switch (diffDays) {
             case " today":
@@ -143,6 +133,7 @@ class Cohort extends React.Component {
         }
     }
     
+    //helper function for the student factory -- calculates the number of days since last commit
     getDiffDays(lastPush){
         let date = parseInt((new Date(Date.now()) - lastPush) / (1000 * 60 * 60 * 24))
     
@@ -157,52 +148,44 @@ class Cohort extends React.Component {
 
 
     getStudentData(arrayOfPromises, students) {
-        let allStudentObjs = [];
+        console.log({arrayOfPromises})
+        console.log({students})
+        return new Promise((resolve, reject) => {
+            Promise.all(arrayOfPromises).then(responses => {
+                console.log({responses})
+                let studentObjs = []
+                responses.forEach(response => {
+                    studentObjs.push(this.getStudentObject(response, students));
+                });
+                resolve(studentObjs)
+            })
+        })
+    }
 
-        Promise.all(arrayOfPromises).then(responses => {
-            responses.forEach(response => {
-                allStudentObjs.push(this.getStudentObject(response, students))
-            });
-        }).then(() => {
-            allStudentObjs.sort(function (a, b) {
+        
+    componentDidMount(){
+        console.log("is this running?")
+        $(".loader-gif").show()
+        let promises = this.createPromises(this.state.students);
+        this.getStudentData(promises, this.state.students)
+        .then((studentObjs) => {
+            studentObjs.sort(function (a, b) {
                 return new Date(a.date) - new Date(b.date);
             });
-
-            this.printToDOM(allStudentObjs);
-        });
-
-    }
-
-    printToDOM(allStudentObjs){
-        let stringToDOM = "";
-    
-        allStudentObjs.forEach(student => {
-            let event = (student.eventType === "ForkEvent") ? "Forked: " : "Last push: "
-    
-            stringToDOM += `
-                <div class="card">
-                    <img class="student-avatar" src="${student.avatar}">
-                    <h4>${student.name.name}</h4>
-                    <p class="${student.color}">${event} ${student.diffDays}</p>
-                    <a href="https://github.com/${student.repoURL}" target="_blank"><p style="color:black;">${student.repo}</p></a>
-                    <p>${student.message}</p>
-                    <a href="https://github.com/${student.githubHandle}" target="_blank">Student's Repo</a>
-                </div>`
-            
-            document.getElementById("printHere").innerHTML = stringToDOM;
+            this.setState({studentObjs: studentObjs})
+            $(".loader-gif").hide()
         })
-    
     }
-    
 
 
     render() {
         return ( 
             <div>
-                <Home assignClass="hide" />
+                <StudentList students={this.state.studentObjs} />
             </div>
         )
     }
+
 }
 
 export default Cohort;
